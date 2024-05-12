@@ -4,13 +4,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
 public class WikipediaHomepage {
     private WebDriver driver;
-    private WebDriverWait genericWait;
+    private WebDriverWait explicitWait;
 
     @FindBy(css = "a[href='//en.wikipedia.org/']")
     WebElement buttonEN;
@@ -21,9 +22,15 @@ public class WikipediaHomepage {
     @FindBy(css = "a[href='//de.wikipedia.org/']")
     WebElement buttonDE;
 
+    @FindBy(id = "searchLanguage")
+    WebElement searchLanguage;
+
+    @FindBy(css = "input#searchInput")
+    WebElement searchBar;
+
     public WikipediaHomepage(WebDriver driver) {
         this.driver = driver;
-        genericWait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        explicitWait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
 
     public void getHomepage() {
@@ -35,19 +42,30 @@ public class WikipediaHomepage {
     }
 
     public void clickEN() {
-        genericWait.until(ExpectedConditions.elementToBeClickable(buttonEN)).click();
+        explicitWait.until(ExpectedConditions.elementToBeClickable(buttonEN)).click();
     }
 
     public void clickES() {
-        genericWait.until(ExpectedConditions.elementToBeClickable(buttonES)).click();
+        explicitWait.until(ExpectedConditions.elementToBeClickable(buttonES)).click();
     }
 
     public void clickDE() {
-        genericWait.until(ExpectedConditions.elementToBeClickable(buttonDE)).click();
+        explicitWait.until(ExpectedConditions.elementToBeClickable(buttonDE)).click();
     }
 
     public void confirmTitle() {
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.titleIs("Wikipedia"));
+    }
+
+    public void selectLanguageEN() {
+        Select searchSelect = new Select(searchLanguage);
+        searchSelect.selectByValue("en");
+    }
+
+    public void search(String searchTerm) {
+        explicitWait.until(ExpectedConditions.elementToBeClickable(searchBar));
+        searchBar.sendKeys(searchTerm);
+        searchBar.submit();
     }
 }

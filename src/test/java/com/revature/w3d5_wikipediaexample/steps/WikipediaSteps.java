@@ -1,19 +1,22 @@
 package com.revature.w3d5_wikipediaexample.steps;
 
-import com.revature.w3d5_wikipediaexample.pages.WikipediaDe;
-import com.revature.w3d5_wikipediaexample.pages.WikipediaEn;
-import com.revature.w3d5_wikipediaexample.pages.WikipediaEs;
-import com.revature.w3d5_wikipediaexample.pages.WikipediaHomepage;
+import com.revature.w3d5_wikipediaexample.pages.*;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 // Runner, after glue code, give plugin to generate report
 /*
@@ -29,6 +32,8 @@ public class WikipediaSteps {
     private WikipediaEn wikipediaEn;
     private WikipediaEs wikipediaEs;
     private WikipediaDe wikipediaDe;
+    private WikipediaArticleGeneric wikipediaArticle;
+    private WikipediaSearch wikipediaSearch;
 
     @Before
     public void setup() {
@@ -40,6 +45,8 @@ public class WikipediaSteps {
         wikipediaEn = PageFactory.initElements(driver, WikipediaEn.class);
         wikipediaEs = PageFactory.initElements(driver, WikipediaEs.class);
         wikipediaDe = PageFactory.initElements(driver, WikipediaDe.class);
+        wikipediaArticle = PageFactory.initElements(driver, WikipediaArticleGeneric.class);
+        wikipediaSearch = PageFactory.initElements(driver, WikipediaSearch.class);
     }
 
     @After
@@ -83,5 +90,49 @@ public class WikipediaSteps {
     @Then("user is taken to the Deutsch homepage")
     public void confirmDeutsch() {
         Assertions.assertEquals("Wikipedia – Die freie Enzyklopädie", wikipediaDe.getTitle());
+    }
+
+    @And("user has their search language set to English")
+    public void userHasTheirSearchLanguageSetToEnglish() {
+        wikipediaHomepage.selectLanguageEN();
+    }
+
+    @Given("{string} is the name of an existing Wikipedia article")
+    public void isTheNameOfAnExistingWikipediaArticle(String searchTerm) {
+        //This is externally verified.
+    }
+
+    @When("user searches for {string}")
+    public void userSearchesFor(String searchTerm) {
+        wikipediaHomepage.search(searchTerm);
+    }
+
+    @Then("user is taken to the Wikipedia page for {string}")
+    public void userIsTakenToTheWikipediaPageFor(String searchTerm) {
+        wikipediaArticle.confirmNotOnHomepage();
+
+        Assertions.assertEquals(true, wikipediaArticle.isArticle());
+    }
+
+    @Given("no page exists for {string}")
+    public void noPageExistsFor(String searchTerm) {
+        //This is externally verified.
+    }
+
+    @Then("user is told that no results were found")
+    public void userIsToldThatNoResultsWereFound() {
+        wikipediaSearch.confirmNotOnHomepage();
+        Assertions.assertEquals(true, wikipediaSearch.noResultsFound());
+    }
+
+    @And("{string} is a term that appears in one or more Wikipedia pages")
+    public void isATermThatAppearsInOneOrMoreWikipediaPages(String searchTerm) {
+        //This is externally verified.
+    }
+
+    @Then("user is shown a list of articles that contain a match for {string}")
+    public void userIsShownAListOfArticlesThatContainAMatchForTheTerm(String searchTerm) {
+        wikipediaSearch.confirmNotOnHomepage();
+        Assertions.assertEquals(false, wikipediaSearch.noResultsFound());
     }
 }
